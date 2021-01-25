@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+      h1 {text-align: center;}
+    </style>
+    <meta charset="utf-8" />
+    <title>Sensors Chart</title>
+
+    <script src="static/Chart.bundle.js"></script>
+    <script src="static/utils.js"></script>
+</head>
+
+<body>
+  
+  <h1>2.03 Drifter Blue's Weather Measurements</h1>
+
+  {% for item in days %}
+      <h3>Day: {{item}}</h3>
+      <canvas id="chart_{{item}}" width="800" height="300"></canvas>
+  {% endfor %}
+
+  <script>
+  {% for item in days %}
+      var chart_Data = {
+      labels: [{% for item in values[item][5] %}
+                    "{{item}}",
+                {% endfor %}],
+      datasets: [
+        {
+              label: 'Ext-Temp',
+              backgroundColor: window.chartColors.red,
+              borderColor: window.chartColors.red,
+              fill: false,
+              data : [{% for item in values[item][0] %}
+                        {{item}},
+                      {% endfor %}]
+        },
+        {
+              label: 'TDS',
+              backgroundColor: window.chartColors.green,
+              borderColor: window.chartColors.green,
+              fill: false,
+              data : [{% for item2 in values[item][1] %}
+                        {{item2}},
+                      {% endfor %}]
+        },
+        {
+              label: 'Salinity',
+              backgroundColor: window.chartColors.blue,
+              borderColor: window.chartColors.blue,
+              fill: false,
+              data : [{% for item3 in values[item][2] %}
+                        {{item3}},
+                      {% endfor %}]
+        },
+        {
+              label: 'Concentration',
+              backgroundColor: window.chartColors.purple,
+              borderColor: window.chartColors.purple,
+              fill: false,
+              data : [{% for item4 in values[item][3] %}
+                        {{item4}},
+                      {% endfor %}]
+        },
+        {
+              label: 'Battery',
+              backgroundColor: window.chartColors.orange,
+              borderColor: window.chartColors.orange,
+              fill: false,
+              data : [{% for item5 in values[item][4] %}
+                        {{item5}},
+                      {% endfor %}]
+        }]
+      }
+
+      var mychart = document.getElementById("chart_{{item}}").getContext("2d");
+      var LineChartDemo = new Chart(mychart, {
+        type: 'line',
+        data: chart_Data,
+        options: {
+          responsive: false,
+          scales: {
+            xAxes: [{
+              scaleLabel: {
+                display: true,
+                labelString: 'Time'
+              }
+            }],
+          }
+        }
+      });
+      
+  {% endfor %}
+  </script>
+
+</body>
+</html>
