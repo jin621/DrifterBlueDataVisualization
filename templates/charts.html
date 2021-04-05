@@ -8,92 +8,224 @@
     <meta charset="utf-8" />
     <title>Sensors Chart</title>
 
-    <script src="static/Chart.bundle.js"></script>
-    <script src="static/utils.js"></script>
+    <script src="static\Chart.bundle.js"></script>
+    <script src="static\utils.js"></script>
+    <script src="static\jquery-3.6.0.js"></script>
+    <script src="static\script.js"></script>
 </head>
 
 <body>
   
   <h1>2.03 Drifter Blue's Weather Measurements</h1>
 
-  {% for item in days %}
-      <h3>Day: {{item}}</h3>
-      <canvas id="chart_{{item}}" width="800" height="300"></canvas>
-  {% endfor %}
+  <h2>
+    <form action="/" method="POST">
+      <button name="downloadCSV" type="submit">Export CSV File</button>
+    </form>
+  </h2>
+
+  <h3>
+    <div class="btn-toolbar">
+      <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default"><input type="radio" name="options" value="daily" checked>Daily</label>
+          <label class="btn btn-default"><input type="radio" name="options" value="monthly">Monthly</label>
+      </div>
+    </div>
+  </h3>
+  
+  <div class="dailyDates">
+    {% for (month, day) in dailyValues.keys() %}
+        <h3>Day: {{month}}/{{day}}</h3>
+        <canvas id="chart_{{month}}{{day}}" width="800" height="300"></canvas>
+    {% endfor %}
+  
+    <script>
+    {% for month, day in dailyValues.keys() %}
+        var dailyChartData = {
+        labels: [{% for hour, minute in dailyValues[(month, day)][6] %}
+                      "{{hour}}:{{minute}}",
+                  {% endfor %}],
+        datasets: [
+          {
+                label: 'Int-Temp',
+                backgroundColor: window.chartColors.yellow,
+                borderColor: window.chartColors.yellow,
+                fill: false,
+                data : [{% for item in dailyValues[(month, day)][0] %}
+                          {{item}},
+                        {% endfor %}]
+          },
+          {
+                label: 'Ext-Temp',
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                fill: false,
+                data : [{% for item2 in dailyValues[(month, day)][1] %}
+                          {{item2}},
+                        {% endfor %}]
+          },
+          {
+                label: 'TDS',
+                backgroundColor: window.chartColors.green,
+                borderColor: window.chartColors.green,
+                fill: false,
+                data : [{% for item3 in dailyValues[(month, day)][2] %}
+                          {{item3}},
+                        {% endfor %}]
+          },
+          {
+                label: 'Salinity',
+                backgroundColor: window.chartColors.blue,
+                borderColor: window.chartColors.blue,
+                fill: false,
+                data : [{% for item4 in dailyValues[(month, day)][3] %}
+                          {{item4}},
+                        {% endfor %}]
+          },
+          {
+                label: 'Concentration',
+                backgroundColor: window.chartColors.purple,
+                borderColor: window.chartColors.purple,
+                fill: false,
+                data : [{% for item5 in dailyValues[(month, day)][4] %}
+                          {{item5}},
+                        {% endfor %}]
+          },
+          {
+                label: 'Battery',
+                backgroundColor: window.chartColors.orange,
+                borderColor: window.chartColors.orange,
+                fill: false,
+                data : [{% for item6 in dailyValues[(month, day)][5] %}
+                          {{item6}},
+                        {% endfor %}]
+          }]
+        }
+
+        var mychart = document.getElementById("chart_{{month}}{{day}}").getContext("2d");
+        var LineChartDemo = new Chart(mychart, {
+          type: 'line',
+          data: dailyChartData,
+          options: {
+            responsive: false,
+            scales: {
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Time'
+                }
+              }],
+            }
+          }
+        });
+    {% endfor %}
+    </script>
+  </div>
+
+  <div class="monthlyDates">
+    {% for month in monthlyValues.keys() %}
+        <h3>Month: {{month}}</h3>
+        <canvas id="chart_{{month}}" width="800" height="300"></canvas>
+    {% endfor %}
+  
+    <script>
+    {% for month in monthlyValues.keys() %}
+        var monthlyChartData = {
+        labels: [{% for day in monthlyValues[month].keys() %}
+                      "{{day}}",
+                  {% endfor %}],
+        datasets: [
+          {
+                label: 'Int-Temp',
+                backgroundColor: window.chartColors.yellow,
+                borderColor: window.chartColors.yellow,
+                fill: false,
+                data : [{% for day, item in monthlyValues[month].items() %}
+                          {{item[0]}},
+                        {% endfor %}]
+          },
+          {
+                label: 'Ext-Temp',
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                fill: false,
+                data : [{% for day, item2 in monthlyValues[month].items() %}
+                          {{item2[1]}},
+                        {% endfor %}]
+          },
+          {
+                label: 'TDS',
+                backgroundColor: window.chartColors.green,
+                borderColor: window.chartColors.green,
+                fill: false,
+                data : [{% for day, item3 in monthlyValues[month].items() %}
+                          {{item3[2]}},
+                        {% endfor %}]
+          },
+          {
+                label: 'Salinity',
+                backgroundColor: window.chartColors.blue,
+                borderColor: window.chartColors.blue,
+                fill: false,
+                data : [{% for day, item4 in monthlyValues[month].items() %}
+                          {{item4[3]}},
+                        {% endfor %}]
+          },
+          {
+                label: 'Concentration',
+                backgroundColor: window.chartColors.purple,
+                borderColor: window.chartColors.purple,
+                fill: false,
+                data : [{% for day, item5 in monthlyValues[month].items() %}
+                          {{item5[4]}},
+                        {% endfor %}]
+          },
+          {
+                label: 'Battery',
+                backgroundColor: window.chartColors.orange,
+                borderColor: window.chartColors.orange,
+                fill: false,
+                data : [{% for day, item6 in monthlyValues[month].items() %}
+                          {{item6[5]}},
+                        {% endfor %}]
+          }]
+        }
+
+        var mychart = document.getElementById("chart_{{month}}").getContext("2d");
+        var LineChartDemo = new Chart(mychart, {
+          type: 'line',
+          data: monthlyChartData,
+          options: {
+            responsive: false,
+            scales: {
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Time'
+                }
+              }],
+            }
+          }
+        });
+    {% endfor %}
+    </script>
+  </div>
 
   <script>
-  {% for item in days %}
-      var chart_Data = {
-      labels: [{% for item in values[item][5] %}
-                    "{{item}}",
-                {% endfor %}],
-      datasets: [
-        {
-              label: 'Ext-Temp',
-              backgroundColor: window.chartColors.red,
-              borderColor: window.chartColors.red,
-              fill: false,
-              data : [{% for item in values[item][0] %}
-                        {{item}},
-                      {% endfor %}]
-        },
-        {
-              label: 'TDS',
-              backgroundColor: window.chartColors.green,
-              borderColor: window.chartColors.green,
-              fill: false,
-              data : [{% for item2 in values[item][1] %}
-                        {{item2}},
-                      {% endfor %}]
-        },
-        {
-              label: 'Salinity',
-              backgroundColor: window.chartColors.blue,
-              borderColor: window.chartColors.blue,
-              fill: false,
-              data : [{% for item3 in values[item][2] %}
-                        {{item3}},
-                      {% endfor %}]
-        },
-        {
-              label: 'Concentration',
-              backgroundColor: window.chartColors.purple,
-              borderColor: window.chartColors.purple,
-              fill: false,
-              data : [{% for item4 in values[item][3] %}
-                        {{item4}},
-                      {% endfor %}]
-        },
-        {
-              label: 'Battery',
-              backgroundColor: window.chartColors.orange,
-              borderColor: window.chartColors.orange,
-              fill: false,
-              data : [{% for item5 in values[item][4] %}
-                        {{item5}},
-                      {% endfor %}]
-        }]
-      }
-
-      var mychart = document.getElementById("chart_{{item}}").getContext("2d");
-      var LineChartDemo = new Chart(mychart, {
-        type: 'line',
-        data: chart_Data,
-        options: {
-          responsive: false,
-          scales: {
-            xAxes: [{
-              scaleLabel: {
-                display: true,
-                labelString: 'Time'
-              }
-            }],
-          }
+    $(document).ready(function() {
+      $('.dailyDates').show();
+      $('.monthlyDates').hide();
+      $('input[type="radio"]').click(function() {
+        if($(this).attr('value') == 'daily') {
+            $('.monthlyDates').hide();
+            $('.dailyDates').show();
+        }
+        else {
+            $('.dailyDates').hide();
+            $('.monthlyDates').show();
         }
       });
-      
-  {% endfor %}
+    });
   </script>
-
 </body>
 </html>
