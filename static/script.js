@@ -1,3 +1,4 @@
+
 $(document).ready(function() {
     $('.dailyDates').show();
     $('input[type="radio"]').click(function() {
@@ -26,3 +27,14 @@ $(document).ready(function() {
             }
         }
     });
+$(document).ready(function() {
+    $('input[type="radio"]').click(function() {
+        $('#dailyDates').show();
+        if($(this).attr('id') == 'daily') {
+            $('#dailyDates').show();
+        }
+        else {
+            $('#dailyDates').hide();
+        }
+    });
+});
